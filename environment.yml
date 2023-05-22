@@ -1,0 +1,40 @@
+name: diffeochin
+channels:
+  - simpleitk
+  - plotly
+  - anaconda
+  - bioconda
+  - soumith
+  - defaults
+  - conda-forge
+dependencies:
+  - ipykernel=6.15.2
+  - ipython=8.4.0
+  - ipywidgets=8.0.4
+  - jupyter_core=4.11.1
+  - jupyterlab_widgets=3.0.5
+  - matplotlib=3.5.3
+  - nbformat
+  - numpy=1.23.5
+  - openpyxl=3.0.10
+  - pandas=1.4.3
+  - pip
+  - pillow=9.3.0
+  - plotly=5.13.0
+  - python=3.10.9
+  - python-kaleido
+  - pyyaml=6.0
+  - simpleitk=2.2.1
+  - tqdm=4.64.1
+  - xlrd=2.0.1
+  - yaml=0.2.5
+  - scikit-image
+  - scipy
+  - seaborn
+  - shapely
+  - statsmodels
+  - pip:
+      - deformetrica==4.3.0
+      - pyvista
+      - scikit-learn
+      - vtk
