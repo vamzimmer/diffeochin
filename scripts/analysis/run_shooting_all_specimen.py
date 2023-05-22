@@ -8,44 +8,24 @@ from glob import glob as glob
 import numpy as np
 import pandas as pd
 import os
-import shutil
-import matplotlib.cm as cm
-# from vtk import vtkPolyDataReader
-# from vtk import vtkPolyDataWriter
-# from numpy import linalg as LA
-# import pyvista as pv
-# pv.set_plot_theme("document")
+import sys
 
-# from pyvista.utilities import xvfb
-# xvfb.start_xvfb()
-# 
-# from IPython.display import Image
-
-from chindef.systemsetup import systemsetup_kallisto as systemsetup
-# from chindef.systemsetup import systemsetup as systemsetup
-from chindef.call_deformetrica import atlas
-from chindef.call_deformetrica import utils
-import chindef.utils.python_utils as putils
-import chindef.utils.plot_utils as pltutils
-import chindef.utils.class_utils as cutils
-import chindef.utils.eval_utils as eutils
+sys.path.insert(0, os.path.abspath('../..'))
+from diffeochin.systemsetup import systemsetup_server as systemsetup
+from diffeochin.call_deformetrica import atlas
+import diffeochin.utils.plot_utils as pltutils
+import diffeochin.utils.eval_utils as eutils
 
 info_file = systemsetup.INFO_FILE
 subset_name = 'all_specimen'
-subset_name = 'all_specimen_pop3'
-subset_name = 'all_specimen_revision'
 
 subset = ['European', 'African', 'Paranthropus', 'Australopithecus']
 subsetX = ['Modern humans', 'Hominins']
 n_components = 5
 embedding = 'kpca_rbf'
 
-# methods = ['atlas_curve', 'atlas_surface',]
-# data = ['cleaned_curve', 'simplified0.3']
-# methods = ['atlas_curve']
-# data = ['cleaned_curve']
-methods = ['atlas_surface']
-data = ['simplified0.3']
+methods = ['atlas_curve', 'atlas_surface',]
+data = ['cleaned_curve', 'simplified0.3']
 template_type = '/template_5'
 
 OUT_DIRs = ['{}/{}/{}-{}{}'.format(systemsetup.OUT_DIR, m.replace('_', '/'),subset_name, d, template_type) for m, d in zip(methods, data)]
@@ -281,8 +261,6 @@ for j, m in enumerate(methods):
             mesh3 = '{}/group1-to-group0-on-template-surface_differences.vtk'.format(group_dir)
             atlas.compute_groupdiff_on_template([mean1, mean2], template, mesh3, scalar='surface_differences')
 
-
-            
 
     # 
     #   Cyclic deformation between groups plus volume change

@@ -6,58 +6,30 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 ### General Imports
-# import matplotlib.pyplot as plt
 from glob import glob as glob
 import numpy as np
-# import pandas as pd
 import os
-# import matplotlib.cm as cm
-# from vtk import vtkPolyDataReader
-# from vtk import vtkPolyDataWriter
-# from numpy import linalg as LA
+import sys
 
-
-# from chindef.systemsetup import systemsetup_kallisto as systemsetup
-from chindef.systemsetup import systemsetup_sinope as systemsetup
-# from chindef.call_deformetrica import atlas
-# from chindef.call_deformetrica import utils
-# import chindef.utils.python_utils as putils
-# import chindef.utils.plot_utils as pltutils
-# import chindef.utils.class_utils as cutils
-import chindef.utils.eval_utils as eutils
-# import chindef.utils.stat_utils as sutils
-import chindef.utils.do_analysis as do
+sys.path.insert(0, os.path.abspath('../..'))
+import diffeochin.utils as cutils
+from diffeochin.systemsetup import systemsetup_server as systemsetup
+from diffeochin import eval_utils as eutils
+from diffeochin.utils import do_analysis as do
 
 info_file = systemsetup.INFO_FILE
 subset_name = 'all_specimen'
-subset_name = 'all_specimen+'
-# subset_name = 'all_specimen_revision'
-# subset_name = 'all_specimen+_revision'
-
-revision = False
-if 'revision' in subset_name:
-    revision = True
 
 subset = ['European', 'African', 'Paranthropus', 'Australopithecus']
-if '+' in subset_name:
-    subset = ['European', 'African', 'Paranthropus', 'Australopithecus', 'Early_Homo?']
 n_components = 5
 pairwise_embedding = 'kpca_rbf' #'mds', 'kpca'
 
-# methods = ['atlas_curve', 'atlas_surface', 'pairwise_curve', 'pairwise_surface']
-# data = ['cleaned_curve', 'simplified0.3', 'cleaned_curve', 'simplified0.3']
-# template_type = ['/template_5', '/template_5', '', '']
+methods = ['atlas_curve', 'atlas_surface', 'pairwise_curve', 'pairwise_surface']
+data = ['cleaned_curve', 'simplified0.3', 'cleaned_curve', 'simplified0.3']
+template_type = ['/template_5', '/template_5', '', '']
 
 methods = ['atlas_curve']
 data = ['cleaned_curve']
-methods = ['atlas_surface']
-data = ['simplified0.3']
-template_type = ['/template_5']
-methods = ['pairwise_curve']
-data = ['cleaned_curve']
-methods = ['pairwise_surface']
-data = ['simplified0.3']
-template_type = ['']
 
 OUT_DIRs = ['{}/{}/{}-{}{}'.format(systemsetup.OUT_DIR, m.replace('_', '/'),subset_name, d, t) for m, d, t in zip(methods, data, template_type)]
 print(OUT_DIRs)
@@ -66,10 +38,6 @@ embedd_2d = True
 
 for j, m in enumerate(methods):
 
-    # if not j==1:
-        # continue
-    # if not 'pairwise' in m:
-    #     continue
     print(m)
     print()
 

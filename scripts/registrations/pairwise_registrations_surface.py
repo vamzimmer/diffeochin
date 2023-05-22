@@ -12,28 +12,18 @@ For N surfaces, N*(N-1)/2 registrations are performed.
 
 import os
 import sys
-# from matplotlib import pyplot as plt
-# from glob import glob as glob
-# import numpy as np
 import pandas as pd
-import yaml
-import io
 
-import chindef.utils as cutils
-from chindef.systemsetup import systemsetup_kallisto as systemsetup
-# from chindef.systemsetup import systemsetup as systemsetup
-# from chindef.pairwise import call_deformetrica as cdef
-from chindef.call_deformetrica import pairwise
-import chindef.utils.python_utils as putils
+sys.path.insert(0, os.path.abspath('../..'))
+import diffeochin.utils as cutils
+from diffeochin.systemsetup import systemsetup_server as systemsetup
+from diffeochin.call_deformetrica import pairwise
+import diffeochin.utils.python_utils as putils
 
 info_file = systemsetup.INFO_FILE
-# sheet = 'all_specimen'
-# exp = 'ROI1-all-specimen'
-# experiment = 'pairwise-simplified0.3-all-roi1'
-
-sheet = 'all_specimen+'
-exp = 'ROI1-all-specimen+'
-experiment = 'pairwise-simplified0.3-all+-roi1'
+sheet = 'all_specimen'
+exp = 'ROI1-all-specimen'
+experiment = 'pairwise-surface'
 
 data = 'simplified0.3'
 # data = 'cleaned'

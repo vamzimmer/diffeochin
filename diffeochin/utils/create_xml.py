@@ -1,6 +1,6 @@
 import os
 
-from ..utils import python_utils as putils
+from diffeochin.utils import python_utils as putils
 
 
 def optimization_parameters(filename, method, param_file):

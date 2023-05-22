@@ -8,26 +8,14 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 ### General Imports
 # import matplotlib.pyplot as plt
 from glob import glob as glob
-# import numpy as np
-# import pandas as pd
 import os
 import sys
-# import matplotlib.cm as cm
-# from vtk import vtkPolyDataReader
-# from vtk import vtkPolyDataWriter
-# from numpy import linalg as LA
 
-sys.path.append('/Users/veronika/Code/chindef')
-# from chindef.systemsetup import systemsetup_kallisto as systemsetup
-from chindef.systemsetup import systemsetup_sinope as systemsetup
-# from chindef.call_deformetrica import atlas
-# from chindef.call_deformetrica import utils
-# import chindef.utils.python_utils as putils
-# import chindef.utils.plot_utils as pltutils
-import chindef.utils.class_utils as cutils
-import chindef.utils.eval_utils as eutils
-# import chindef.utils.stat_utils as sutils
-import chindef.utils.do_analysis as do
+sys.path.insert(0, os.path.abspath('../..'))
+from diffeochin.systemsetup import systemsetup_server as systemsetup
+from diffeochin.utils import class_utils as cutils
+import diffeochin.utils.eval_utils as eutils
+import diffeochin.utils.do_analysis as do
 
 info_file = systemsetup.INFO_FILE
 
@@ -36,51 +24,23 @@ pairwise_embedding = 'kpca_rbf'
 
 # ORIGINAL SUBMISSION
 subset_name = 'all_specimen'
-# subset_name = 'all_specimen+'
-# methods = ['atlas_curve', 'atlas_surface', 'pairwise_curve', 'pairwise_surface']
-# data = ['cleaned_curve', 'simplified0.3', 'cleaned_curve', 'simplified0.3']
-# template_type = ['/template_5', '/template_5', '', '']
-
-# REVISION
-# subset_name = 'all_specimen_revision'
-# subset_name = 'all_specimen+_revision'
-methods = ['atlas_curve']
-data = ['cleaned_curve']
-# methods = ['atlas_surface']
-# data = ['simplified0.3']
-template_type = ['/template_5']
-# methods = ['pairwise_curve']
-# data = ['cleaned_curve']
-# methods = ['pairwise_surface']
-# data = ['simplified0.3']
-# template_type = ['']
+methods = ['atlas_curve', 'atlas_surface', 'pairwise_curve', 'pairwise_surface']
+data = ['cleaned_curve', 'simplified0.3', 'cleaned_curve', 'simplified0.3']
+template_type = ['/template_5', '/template_5', '', '']
 
 subset = ['European', 'African', 'Paranthropus', 'Australopithecus']
-if '+' in subset_name:
-    subset = ['European', 'African', 'Paranthropus', 'Australopithecus', 'Early_Homo?']
-
-revision = False
-if 'revision' in subset_name:
-    revision = True
-deleted_samples_revision = ['embr_EMBR209', 'embr_EMBR590', 'ctdsc_37-CEY0005', 'ctdsc_138-ROS0299', 'ctdsc_KGA0280', 'ctdsc_MAG0664', 'ctdsc_MDA0058', 'ctdsc_MSH0002_8612', 
-                            'pbc_E5_187', 'pbc_E7_194', 'pbc_SUB1_185', 'pbc_SUB2_183', 'pbc_SUB3_181', 'pbc_SUB4_182', 'pbc_SUB5_184', 'pbc_SUB6_186']
 
 OUT_DIRs = ['{}/{}/{}-{}{}'.format(systemsetup.OUT_DIR, m.replace('_', '/'),subset_name, d, t) for m, d, t in zip(methods, data, template_type)]
 print(OUT_DIRs)
 saveit = True
 
-do_embedding = False
-do_taxon = True
+do_embedding = True
+do_taxon = False
 do_gender = False
 do_age = False
 do_morph = False
 
 for j, m in enumerate(methods):
-
-    # if not j==3:
-        # continue
-    # if not 'pairwise' in m:
-        # continue
 
     # output folders
     deformetrica_dir = OUT_DIRs[j] + '/atlasing' if 'atlas' in m else OUT_DIRs[j] + '/registrations'
@@ -116,8 +76,7 @@ for j, m in enumerate(methods):
         else:
             print(m)
             REG_DIR = '{}/pairwise/{}/all_specimen+-{}/registrations'.format(systemsetup.OUT_DIR, 'curve' if 'curve' in m else 'surface', 'cleaned_curve' if 'curve' in m else 'simplified0.3')
-            D = do.load_distance_matrix(deformetrica_dir, REG_DIR, df, kernel='rbf' if pairwise_embedding=='kernel_rbf' else None,
-                                        revision=revision, deleted_samples_revision=None if not revision else deleted_samples_revision)
+            D = do.load_distance_matrix(deformetrica_dir, REG_DIR, df, kernel='rbf' if pairwise_embedding=='kernel_rbf' else None)
 
             # continue
 
@@ -175,15 +134,13 @@ for j, m in enumerate(methods):
     #   Age regression
     #
     if do_age:
-        # do.age_regression(df, n_components, stat_file.replace('.xlsx', '_age.xlsx'), showit=False, revision=revision)
-        do.age_regression(df, n_components, stat_file.replace('.xlsx', '_age_nz.xlsx'), showit=False, zscore=False, revision=revision)
+        do.age_regression(df, n_components, stat_file.replace('.xlsx', '_age_nz.xlsx'), showit=False, zscore=False,)
 
 
     #
     #   Morph regression
     #
     if do_morph:
-        do.morph_regression(df, n_components, stat_file.replace('.xlsx', '_morph.xlsx'), showit=False, revision=revision)
-        # if 'pairwise' in m and pairwise_embedding=='mds':
-        do.morph_regression(df, n_components, stat_file.replace('.xlsx', '_morph.xlsx'), showit=False, abs=True, revision=revision)
+        do.morph_regression(df, n_components, stat_file.replace('.xlsx', '_morph.xlsx'), showit=False)
+        do.morph_regression(df, n_components, stat_file.replace('.xlsx', '_morph.xlsx'), showit=False, abs=True)
         

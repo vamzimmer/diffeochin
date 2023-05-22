@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+**/.ipynb_checkpoints
+.idea
+__pycache__/
+*.py[cod]
+**/.DS_Store

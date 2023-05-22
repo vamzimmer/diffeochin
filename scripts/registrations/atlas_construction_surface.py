@@ -12,55 +12,25 @@ For N surfaces, N registrations are performed.
 
 import os
 import sys
-# from matplotlib import pyplot as plt
-# from glob import glob as glob
-# import numpy as np
 import pandas as pd
-import yaml
-import io
 
-import chindef.utils as cutils
-from chindef.systemsetup import systemsetup_kallisto as systemsetup
-# from chindef.systemsetup import systemsetup as systemsetup
-from chindef.call_deformetrica import atlas
-import chindef.utils.python_utils as putils
-import chindef.utils.plot_utils as pltutils
+sys.path.insert(0, os.path.abspath('../..'))
+import diffeochin.utils as cutils
+from diffeochin.systemsetup import systemsetup_server as systemsetup
+from diffeochin.call_deformetrica import atlas
+import diffeochin.utils.python_utils as putils
+import diffeochin.utils.plot_utils as pltutils
 
 info_file = systemsetup.INFO_FILE
-# sheet = 'all_specimen'
-# exp = 'ROI1-all-specimen'
-# experiment = 'atlas-simplified0.3-all-roi1'
-# sheet = 'modern_humans'
-# exp = 'ROI1-modern-humans'
-# experiment = 'atlas-simplified0.3-mh-roi1'
-# sheet = 'hominins'
-# exp = 'ROI1-hominins'
-# experiment = 'atlas-simplified0.3-hom-roi1'
-
-sheet = 'all_specimen+'
-exp = 'ROI1-all-specimen+'
-experiment = 'atlas-simplified0.3-all+-roi1'
-# sheet = 'hominins+'
-# exp = 'ROI1-hominins+'
-# experiment = 'atlas-simplified0.3-hom+-roi1'
-
-# FOR REVISION
-# sheet = 'all_specimen_rev'
-# exp = 'ROI1-all-specimen-rev'
-# experiment = 'atlas-simplified0.3-all-rev-roi1'
-# sheet = 'modern_humans_rev'
-# exp = 'ROI1-modern-humans-rev'
-# experiment = 'atlas-simplified0.3-mh-rev-roi1'
-# sheet = 'all_specimen+_rev'
-# exp = 'ROI1-all-specimen+-rev'
-# experiment = 'atlas-simplified0.3-all+-rev-roi1'
+sheet = 'all_specimen'
+exp = 'ROI1-all-specimen'
+experiment = 'atlas-surface'
 
 data = 'simplified0.3'
 template_type = 'template_5'
 
 DATA1_DIR = "{}/{}".format(systemsetup.DATA_DIR, data)
 template = '{}/{}.vtk'.format(DATA1_DIR, template_type) # template template_1 template_2 template_3
-# OUT_DIR = '{}/ROI1/{}/{}/atlas/{}'.format(systemsetup.OUT_DIR, data, sheet, template_type)
 OUT_DIR = '{}/atlas/surface/{}-{}/{}'.format(systemsetup.OUT_DIR, sheet, data, template_type)
 
 

@@ -12,47 +12,18 @@ For N surfaces, N registrations are performed.
 
 import os
 import sys
-# from matplotlib import pyplot as plt
-# from glob import glob as glob
-# import numpy as np
 import pandas as pd
-import yaml
-import io
 
-import chindef.utils as cutils
-from chindef.systemsetup import systemsetup_kallisto as systemsetup
-# from chindef.systemsetup import systemsetup as systemsetup
-from chindef.call_deformetrica import atlas
-import chindef.utils.python_utils as putils
+sys.path.insert(0, os.path.abspath('../..'))
+import diffeochin.utils as cutils
+from diffeochin.systemsetup import systemsetup_server as systemsetup
+from diffeochin.call_deformetrica import atlas
+import diffeochin.utils.python_utils as putils
 
 info_file = systemsetup.INFO_FILE
-# sheet = 'all_specimen'
-# exp = 'ROI2-all-specimen'
-# experiment = 'atlas-curve-all-roi2'
-# sheet = 'modern_humans'
-# exp = 'ROI2-modern_humans'
-# experiment = 'atlas-curve-mh-roi2'
-# sheet = 'hominins'
-# exp = 'ROI2-hominins'
-# experiment = 'atlas-curve-hom-roi2'
-
-# sheet = 'all_specimen+'
-# exp = 'ROI2-all-specimen+'
-# experiment = 'atlas-curve-all+-roi2'
-# sheet = 'hominins+'
-# exp = 'ROI2-hominins+'
-# experiment = 'atlas-curve-hom+-roi2'
-
-# FOR REVISION
-# sheet = 'all_specimen_rev'
-# exp = 'ROI2-all-specimen-rev'
-# experiment = 'atlas-curve-all-rev-roi2'
-sheet = 'modern_humans_rev'
-exp = 'ROI2-modern-humans-rev'
-experiment = 'atlas-curve-mh-rev-roi2'
-# sheet = 'all_specimen+_rev'
-# exp = 'ROI2-all-specimen+-rev'
-# experiment = 'atlas-curve-all+-rev-roi2'
+sheet = 'all_specimen'
+exp = 'ROI2-all-specimen'
+experiment = 'atlas-curve'
 
 data = 'cleaned_curve'
 template_type = 'template_5'
@@ -111,7 +82,7 @@ def atlas_construction():
 
     conv_file = log_file.replace('deformetrica.log', 'convergence.txt')
     putils.get_convergence_values(log_file, conv_file)
-    # putils.plot_convergence(conv_file, out_dir)
+    putils.plot_convergence(conv_file, out_dir)
 
 
 def main():

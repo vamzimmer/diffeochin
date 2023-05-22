@@ -3,34 +3,19 @@ mpl_logger = logging.getLogger('matplotlib')
 mpl_logger.setLevel(logging.WARNING) 
 
 ### General Imports
-# import matplotlib.pyplot as plt
-# from glob import glob as glob
-# import numpy as np
 import pandas as pd
 import os
-# import shutil
-# import matplotlib.cm as cm
-# from vtk import vtkPolyDataReader
-# from vtk import vtkPolyDataWriter
-# from numpy import linalg as LA
-
-# from IPython.display import Image
+import sys
 
 import pyvista as pv
 pv.set_plot_theme("document")
 
-# from chindef.systemsetup import systemsetup_kallisto as systemsetup
-from chindef.systemsetup import systemsetup_sinope as systemsetup
-# from chindef.call_deformetrica import atlas
-# from chindef.call_deformetrica import utils
-# import chindef.utils.python_utils as putils
-import chindef.utils.plot_utils as pltutils
-# import chindef.utils.class_utils as cutils
-# import chindef.utils.eval_utils as eutils
+sys.path.insert(0, os.path.abspath('../..'))
+from diffeochin.systemsetup import systemsetup_server as systemsetup
+from diffeochin.utils import plot_utils as pltutils
 
 info_file = systemsetup.INFO_FILE
-# subset_name = 'all_specimen'
-subset_name = 'all_specimen+'
+subset_name = 'all_specimen'
 subset = ['European', 'African', 'Paranthropus', 'Australopithecus', 'Early_Homo?']
 n_components = 5
 embedding = 'kpca_rbf'

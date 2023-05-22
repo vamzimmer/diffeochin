@@ -9,12 +9,10 @@ from sklearn import manifold
 from sklearn import preprocessing as preprocessing
 from IPython.display import Image
 
-
-# from chindef.call_deformetrica import pairwise
-import chindef.utils.class_utils as cutils
-import chindef.utils.eval_utils as eutils
-import chindef.utils.stat_utils as sutils
-import chindef.utils.plot_utils as pltutils
+import diffeochin.utils.class_utils as cutils
+import diffeochin.utils.eval_utils as eutils
+import diffeochin.utils.stat_utils as sutils
+import diffeochin.utils.plot_utils as pltutils
 
 '''
     Do the statistical analysis
@@ -48,40 +46,14 @@ def load_atlas_data(atlas_dir, df):
     return momenta_linearised
 
 
-def load_distance_matrix(out_dir, reg_dir, df, kernel=None, revision=False, deleted_samples_revision=None):
+def load_distance_matrix(out_dir, reg_dir, df, kernel=None):
     if kernel is not None:
         distance_file = out_dir + '/D.xlsx'
     else:
         distance_file = out_dir + '/D_rbf.xlsx'
 
-    # D = eutils.read_data(distance_file, sheet='distance_matrix')
-    # D = D.drop(columns=['Unnamed: 0'])
-    
-    if not revision:
-        # D = pairwise.create_distance_matrix(reg_dir, df['specimen'], distance_file, len(df), overwrite=False)
-        D = eutils.read_data(distance_file, sheet='distance_matrix')
-        D = D.drop(columns=['Unnamed: 0'])
-    else:
-        if 'all_specimen' in out_dir:
-            # We take the already constructed distance matrices from the original submissions and just delete the required rows and columns
-            # The new creation of the distance matrix (like for the modern_human sample, see below) leads to unplausible embeddings, where the hominins are mapped on top of the modern human samples.
-            distance_file_original = distance_file.replace('_revision', '')
-            D = eutils.read_data(distance_file_original, sheet='distance_matrix')
-            D = D.drop(columns=deleted_samples_revision)
-            D = D.drop(columns=['Unnamed: 0'])
-            D = D[~D.specimen.isin(deleted_samples_revision)]
-
-            if not os.path.exists(out_dir):
-                os.makedirs(out_dir)
-            D.to_excel(distance_file, sheet_name='distance_matrix')
-        elif 'modern_humans' in out_dir:
-            # The use of the already constructed distance matrixes doesn't work for the modern_humans population. No idea why, but kpca won't compute.
-            # The new creatiom of the distance matrix works...
-            # D = pairwise.create_distance_matrix(reg_dir, df['specimen'], distance_file, len(df), overwrite=False)
-            D = eutils.read_data(distance_file, sheet='distance_matrix')
-            D = D.drop(columns=['Unnamed: 0'])
-
-    # df = df.iloc[: , 1:]
+    D = eutils.read_data(distance_file, sheet='distance_matrix')
+    D = D.drop(columns=['Unnamed: 0'])
     # compute norm of momentas
     df['momenta_norm'] = (D.sum().to_numpy()[1:]/(len(df)-1)).astype(np.float)
 
@@ -281,7 +253,7 @@ def gender_classification(df, subset, subset_gender, n_components, outfile, show
     print('Done')
 
 
-def age_regression(df, n_components, outfile, showit=True, revision=False, zscore=True):
+def age_regression(df, n_components, outfile, showit=True, zscore=True):
 
     PCs = ['PC{}_zscore'.format(n+1) for n in range(n_components)]
     y = 'age_zscore'
@@ -301,12 +273,8 @@ def age_regression(df, n_components, outfile, showit=True, revision=False, zscor
     anova_table, slr, pc = sutils.my_anova_linear(df, X, y, pfile, ax=ax[0], group_names='Group_names', colors=colors, markers=markers, showit=showit)
 
     # European vs. African, Male vs. Female
-    if not revision:
-        colors = ['b', 'deepskyblue', 'k', 'r', 'orange', 'k', 'k', 'k','k']
-        markers = ['o', 'o', 'o', '^', '^', '^', 's', 'd', 'P']
-    else:
-        colors = ['b', 'deepskyblue', 'r', 'orange', 'k', 'k', 'k']
-        markers = ['o', 'o', '^', '^', 's', 'd', 'P']
+    colors = ['b', 'deepskyblue', 'k', 'r', 'orange', 'k', 'k', 'k','k']
+    markers = ['o', 'o', 'o', '^', '^', '^', 's', 'd', 'P']
     anova_table, slr, _ = sutils.my_anova_linear(df, X, y, pfile, ax=ax[1], group_names='Group_names_2', colors=colors, markers=markers, showit=showit)
 
     # non-linear regression
@@ -328,7 +296,7 @@ def age_regression(df, n_components, outfile, showit=True, revision=False, zscor
 
 
 
-def morph_regression(df, n_components, outfile, abs=False, showit=True, revision=False):
+def morph_regression(df, n_components, outfile, abs=False, showit=True):
 
     if not abs:
         PCs = ['PC{}_zscore'.format(n+1) for n in range(n_components)]
@@ -350,16 +318,12 @@ def morph_regression(df, n_components, outfile, abs=False, showit=True, revision
     cutils.df_save_to_excel(outfile, slr, 'LinReg_SLR{}_ncomp{}'.format('_abs' if abs else '', n_components))
 
     # European vs. African, Male vs. Female
-    if not revision:
-        colors = ['b', 'deepskyblue', 'k', 'r', 'orange', 'k', 'g', 'm', 'y']
-        markers = ['o', 'o', 'o', '^', '^', '^', 's', 'd', 'P']
-    else:
-        colors = ['b', 'deepskyblue', 'r', 'orange', 'g', 'm', 'y']
-        markers = ['o', 'o', '^', '^', 's', 'd', 'P']
+    colors = ['b', 'deepskyblue', 'k', 'r', 'orange', 'k', 'g', 'm', 'y']
+    markers = ['o', 'o', 'o', '^', '^', '^', 's', 'd', 'P']
     anova_table, slr = sutils.my_anova_linear(df, X, y, pfile, ax=ax[1], group_names='Group_names_2', colors=colors, markers=markers, showit=showit)
 
 
-def plot_embeddings_2d(df, subset1, subset2, pfile, plot_pcs=[1,2], ids=False, showit=True, revision=False, axis_label=None):
+def plot_embeddings_2d(df, subset1, subset2, pfile, plot_pcs=[1,2], ids=False, showit=True, axis_label=None):
 
     PCs = ['PC{}'.format(n) for n in plot_pcs]
     X = df[PCs].to_numpy()
@@ -368,14 +332,9 @@ def plot_embeddings_2d(df, subset1, subset2, pfile, plot_pcs=[1,2], ids=False, s
     if ids:
         spec = [x[x.find('_')+1:] for x in df['specimen']] 
     
-    if not revision:
-        colors = ['b', 'deepskyblue', 'k', 'r', 'orange', 'k', 'g', 'm', 'y']
-        colors2 = np.array([0, 1, 5, 4, 3, 5, 3, .8, 3])
-        markers = ['o', 'o', 'o', '^', '^', '^', 's', 'd', 'P']
-    else:
-        colors = ['b', 'deepskyblue', 'r', 'orange', 'g', 'm', 'y']
-        colors2 = np.array([0, 1, 5, 4, 3, .8, 3])
-        markers = ['o', 'o', '^', '^', 's', 'd', 'P']
+    colors = ['b', 'deepskyblue', 'k', 'r', 'orange', 'k', 'g', 'm', 'y']
+    colors2 = np.array([0, 1, 5, 4, 3, 5, 3, .8, 3])
+    markers = ['o', 'o', 'o', '^', '^', '^', 's', 'd', 'P']
     
     extend = np.asarray([abs(np.max(X[:,0])) + abs(np.min(X[:,0])), abs(np.max(X[:,1])) + abs(np.min(X[:,1]))])
     border = extend*20/100
@@ -391,12 +350,8 @@ def plot_embeddings_2d(df, subset1, subset2, pfile, plot_pcs=[1,2], ids=False, s
     pltutils.scatter_classes(X,df['Group_ids_2'],np.asarray([]),subset2,'Taxonomy+Gender',ax=ax[1], limits=limits,ids=spec,img=pfile, colors=colors, markers=markers, colors2=colors2, showit=False, axis_label=axis_label)
 
     # Subgroups African/European + Gender
-    if not revision:
-        colors2 = np.array([0, 1, 5, 5, 4, 5, 3, .8, 3])
-        ns = 3
-    else:
-        colors2 = np.array([0, 1, 5, 4, 3, .8, 3])
-        ns = 2
+    colors2 = np.array([0, 1, 5, 5, 4, 5, 3, .8, 3])
+    ns = 3
     for si, sub in enumerate(subset1[:2]):
 
         g2 = list(subset2[si*ns:si*ns+ns])
@@ -433,20 +388,12 @@ def plot_embeddings_2d(df, subset1, subset2, pfile, plot_pcs=[1,2], ids=False, s
 
     pfile = pfile.replace('.png', '_fun.png')
     # pfile=None
-    if not revision:
-        colors2 = np.array([.5, 6, 3, .8, 4, 2, 1])
-    else:
-        colors2 = np.array([.5, 6, 3, .8, 4, 2, 1])
+    colors2 = np.array([.5, 6, 3, .8, 4, 2, 1])
     age = np.divide(df['age_in_days'].tolist(), 365)
 
-    if not revision:
-        # nonlinear colormap for age
-        # this colormap is specific for the chin data!!!
-        # levels = np.asarray([0,2,4,6,8,10,12,14,16])
-        levels = np.asarray([0,1,2,3,5,6,7,10,13,16])
-        cmap_age = pltutils.nlcmap(plt.cm.jet, levels)
-    else:
-        cmap_age = None
+    levels = np.asarray([0,1,2,3,5,6,7,10,13,16])
+    cmap_age = pltutils.nlcmap(plt.cm.jet, levels)
+
     pltutils.scatter_classes(X,df['Group_ids'],age,subset1,'Age in years',ax=ax[0], fig=fig, ids=spec, limits=limits,img=pfile, colors2=colors2, showit=False, axis_label=axis_label, cmap=cmap_age)
     mnorm = df['momenta_norm'].to_numpy()
     pltutils.scatter_classes(X,df['Group_ids'],mnorm,subset1,'Momenta norm',ax=ax[1], ids=spec, limits=limits,img=pfile, colors2=colors2, showit=False, axis_label=axis_label, cmap=None)
@@ -455,7 +402,7 @@ def plot_embeddings_2d(df, subset1, subset2, pfile, plot_pcs=[1,2], ids=False, s
         plt.show()
 
 
-def plot_embeddings_3d(df, subset1, subset2, pfile, gifs, plot_pcs=[1,2,3], showit=True, revision=False, axis_label=None):
+def plot_embeddings_3d(df, subset1, subset2, pfile, gifs, plot_pcs=[1,2,3], showit=True, axis_label=None):
 
     PCs = ['PC{}'.format(n) for n in plot_pcs]
     X = df[PCs].to_numpy()
@@ -475,14 +422,9 @@ def plot_embeddings_3d(df, subset1, subset2, pfile, gifs, plot_pcs=[1,2,3], show
     colors2 = np.array([0, 1, 5, 4, 3, 5, 3, .8, 3])
     markers = ['o', 'o', 'o', '^', '^', '^', 's', 'd', 'P']
 
-    if not revision:
-        colors = ['b', 'deepskyblue', 'k', 'r', 'orange', 'k', 'g', 'm', 'y']
-        colors2 = np.array([0, 1, 5, 4, 3, 5, 3, .8, 3])
-        markers = ['o', 'o', 'o', '^', '^', '^', 's', 'd', 'P']
-    else:
-        colors = ['b', 'deepskyblue', 'r', 'orange', 'g', 'm', 'y']
-        colors2 = np.array([0, 1, 4, 3, 3, .8, 3])
-        markers = ['o', 'o', '^', '^', 's', 'd', 'P']
+    colors = ['b', 'deepskyblue', 'k', 'r', 'orange', 'k', 'g', 'm', 'y']
+    colors2 = np.array([0, 1, 5, 4, 3, 5, 3, .8, 3])
+    markers = ['o', 'o', 'o', '^', '^', '^', 's', 'd', 'P']
 
     if axis_label is None:
         axis_label = ['PC1', 'PC2', 'PC3']
@@ -505,10 +447,7 @@ def plot_embeddings_3d(df, subset1, subset2, pfile, gifs, plot_pcs=[1,2,3], show
     #
     #   Visualization: Europeans (Male vs. Female) and Africans (Male vs. Female)
     #
-    if not revision:
-        ns = 3
-    else:
-        ns = 2
+    ns = 3
     for si, sub in enumerate(subset1[:2]):
         g2 = list(subset2[si*ns:si*ns+ns])
         col = colors[si*ns:si*ns+ns]
